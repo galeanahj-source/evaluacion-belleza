@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Evaluación: Belleza y Cuidado de Piel</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; background: #f4f4f0; color: #1a1a1a; min-height: 100vh; padding: 2rem 1rem; }
+  .container { max-width: 700px; margin: 0 auto; }
+  .header { text-align: center; margin-bottom: 2rem; }
+  .header h1 { font-size: 22px; font-weight: 700; color: #1a1a1a; margin-bottom: 4px; }
+  .header p { font-size: 14px; color: #666; }
+  .tags { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 10px; }
+  .tag { font-size: 12px; padding: 3px 12px; border-radius: 99px; border: 1px solid #ddd; color: #555; background: #fff; }
+  .card { background: #fff; border: 1px solid #e0e0e0; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.2rem; }
+  .card label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; color: #333; }
+  .name-row { display: flex; gap: 10px; }
+  .name-row input { flex: 1; padding: 10px 14px; border: 1px solid #ccc; border-radius: 8px; font-size: 14px; outline: none; }
+  .name-row input:focus { border-color: #1D9E75; }
+  .btn-start { background: #1D9E75; color: #fff; border: none; border-radius: 8px; padding: 10px 22px; font-size: 14px; cursor: pointer; font-weight: 600; white-space: nowrap; }
+  .btn-start:hover { background: #188a65; }
+  .err-msg { font-size: 12px; color: #c0392b; margin-top: 6px; display: none; }
+  .progress-wrap { margin-bottom: 1.2rem; }
+  .progress-info { display: flex; justify-content: space-between; font-size: 12px; color: #888; margin-bottom: 5px; }
+  .progress-bar { height: 6px; background: #e0e0e0; border-radius: 3px; }
+  .progress-fill { height: 100%; background: #1D9E75; border-radius: 3px; transition: width 0.4s ease; }
+  .section-label { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 10px; border-radius: 99px; margin-bottom: 10px; }
+  .lbl-cromatico { background: #EEEDFE; color: #3C3489; }
+  .lbl-piel { background: #E1F5EE; color: #0F6E56; }
+  .question-num { font-size: 12px; color: #999; margin-bottom: 6px; }
+  .question-text { font-size: 16px; font-weight: 600; line-height: 1.5; margin-bottom: 1.2rem; color: #1a1a1a; }
+  .options { display: flex; flex-direction: column; gap: 8px; }
+  .opt-btn { text-align: left; background: #f7f7f5; border: 1px solid #ddd; border-radius: 8px; padding: 11px 14px; font-size: 14px; color: #1a1a1a; cursor: pointer; transition: background 0.15s; line-height: 1.4; }
+  .opt-btn:hover:not(:disabled) { background: #efefeb; border-color: #bbb; }
+  .opt-btn.correct { background: #EAF3DE; border-color: #639922; color: #2d5a0e; font-weight: 600; }
+  .opt-btn.wrong { background: #FCEBEB; border-color: #E24B4A; color: #8b1a1a; }
+  .opt-btn:disabled { cursor: default; }
+  .feedback { font-size: 13px; margin-top: 12px; padding: 10px 14px; border-radius: 8px; display: none; line-height: 1.5; }
+  .feedback.show { display: block; }
+  .fb-correct { background: #EAF3DE; color: #2d5a0e; border-left: 3px solid #639922; }
+  .fb-wrong { background: #FCEBEB; color: #8b1a1a; border-left: 3px solid #E24B4A; }
+  .nav-row { display: flex; justify-content: space-between; align-items: center; margin-top: 1.2rem; }
+  .nav-btn { background: #fff; border: 1px solid #ccc; border-radius: 8px; padding: 9px 20px; font-size: 14px; cursor: pointer; color: #333; font-weight: 600; }
+  .nav-btn:hover:not(:disabled) { background: #f4f4f0; }
+  .nav-btn:disabled { opacity: 0.35; cursor: default; }
+  .score-pill { font-size: 13px; color: #666; background: #f0f0ec; padding: 5px 12px; border-radius: 99px; }
+  .name-badge { display: inline-block; background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 5px 12px; font-size: 12px; color: #555; margin-bottom: 1rem; }
+  .results-card { background: #fff; border: 1px solid #e0e0e0; border-radius: 12px; padding: 2rem; text-align: center; margin-bottom: 1.2rem; }
+  .result-name { font-size: 20px; font-weight: 700; color: #1a1a1a; margin-bottom: 4px; }
+  .score-big { font-size: 56px; font-weight: 700; color: #1D9E75; line-height: 1.1; }
+  .score-pct { font-size: 15px; color: #555; margin-top: 6px; }
+  .score-msg { font-size: 15px; color: #333; margin-top: 6px; font-weight: 600; }
+  .score-breakdown { display: flex; gap: 12px; justify-content: center; margin-top: 16px; flex-wrap: wrap; }
+  .score-box { background: #f7f7f5; border-radius: 10px; padding: 12px 20px; font-size: 13px; color: #666; min-width: 140px; }
+  .score-box strong { display: block; font-size: 22px; font-weight: 700; color: #1a1a1a; }
+  .result-date { font-size: 12px; color: #aaa; margin-top: 10px; }
+  .status-msg { font-size: 13px; margin-top: 14px; }
+  .sending { color: #888; }
+  .sent-ok { color: #2d7a1e; font-weight: 600; display: none; }
+  .sent-err { color: #c0392b; display: none; }
+  .btn-retry { background: #fff; border: 1px solid #ccc; border-radius: 8px; padding: 12px 28px; font-size: 14px; cursor: pointer; font-weight: 600; color: #333; margin-top: 1.4rem; }
+  .btn-retry:hover { background: #f4f4f0; }
+  .section-divider { font-size: 13px; font-weight: 700; color: #555; margin: 1.5rem 0 0.5rem; padding-bottom: 8px; border-bottom: 1px solid #e0e0e0; }
+  .review-item { background: #f7f7f5; border-radius: 8px; padding: 12px 14px; margin-top: 8px; font-size: 13px; }
+  .review-q { font-weight: 600; margin-bottom: 4px; color: #1a1a1a; line-height: 1.4; }
+  .review-a { color: #666; line-height: 1.4; }
+  .ok { color: #2d7a1e; font-weight: 600; }
+  .err { color: #c0392b; font-weight: 600; }
+  @media (max-width: 480px) {
+    body { padding: 1rem 0.75rem; }
+    .score-big { font-size: 44px; }
+    .name-row { flex-direction: column; }
+    .btn-start { width: 100%; text-align: center; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <h1>Evaluación: Belleza y Cuidado de Piel</h1>
+    <p>Maestra Paloma Galeana</p>
+    <div class="tags">
+      <span class="tag">🎨 El Círculo Cromático — 10 preguntas</span>
+      <span class="tag">🧴 Preparación de Piel — 10 preguntas</span>
+    </div>
+  </div>
+
+  <div id="name-area">
+    <div class="card">
+      <label for="student-name">Ingresa tu nombre completo para comenzar</label>
+      <div class="name-row">
+        <input type="text" id="student-name" placeholder="Nombre completo" maxlength="60" />
+        <button class="btn-start" onclick="startQuiz()">Comenzar →</button>
+      </div>
+      <div id="name-error" class="err-msg">Por favor ingresa tu nombre antes de comenzar.</div>
+    </div>
+  </div>
+
+  <div id="quiz-area" style="display:none;">
+    <div class="name-badge" id="quiz-name-badge"></div>
+    <div class="progress-wrap">
+      <div class="progress-info">
+        <span id="progress-text">Pregunta 1 de 20</span>
+        <span id="score-text">Puntaje: 0/20</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    </div>
+    <div id="question-area"></div>
+  </div>
+
+  <div id="results-area" style="display:none;"></div>
+
+</div>
+<script>
+const SHEET_URL     = "https://script.google.com/macros/s/AKfycbz06G6bEK1k_wWwrdzFD7TxHicT9DzbJGq7SP_3ZkdA0Vl2yIHFPETw__sAjpMYSxwR/exec";
+const FORMSPREE_URL = "https://formspree.io/f/mpqkdblb";
+
+const questions = [
+  { tema:"Círculo Cromático", q:"¿Qué es el círculo cromático?", opts:["Una paleta de colores para pintar","Una representación visual de los colores organizados según su tono","Un sistema de mezcla de pinturas","Un catálogo de colores de marcas de maquillaje"], ans:1, exp:"Es una representación visual de los colores organizados según su tono, que ayuda a entender cómo se relacionan entre sí." },
+  { tema:"Círculo Cromático", q:"¿Cuáles son los colores primarios?", opts:["Naranja, verde y violeta","Rojo, azul y amarillo","Rojo, amarillo y verde","Azul, blanco y negro"], ans:1, exp:"Los colores primarios son rojo, azul y amarillo. Son los colores base que no se pueden obtener mezclando otros." },
+  { tema:"Círculo Cromático", q:"¿Cómo se obtiene el color naranja?", opts:["Azul + amarillo","Rojo + azul","Rojo + amarillo","Amarillo + verde"], ans:2, exp:"El naranja es un color secundario que se obtiene mezclando rojo + amarillo." },
+  { tema:"Círculo Cromático", q:"¿Qué son los colores secundarios?", opts:["Colores que no existen en la naturaleza","Los que se obtienen al mezclar dos colores primarios","Los que se obtienen al mezclar tres colores","Colores que solo se usan en maquillaje"], ans:1, exp:"Los colores secundarios se obtienen al mezclar dos colores primarios: naranja, verde y violeta." },
+  { tema:"Círculo Cromático", q:"¿Para qué sirve el círculo cromático en el maquillaje?", opts:["Solo para decorar materiales de trabajo","Para neutralizar o corregir imperfecciones de la piel","Para saber qué marcas de maquillaje comprar","Para identificar el tipo de brocha a usar"], ans:1, exp:"Los maquillistas usan el círculo cromático para neutralizar imperfecciones, como correctores verdes para rojeces u naranjas para ojeras azuladas." },
+  { tema:"Círculo Cromático", q:"¿Qué caracteriza a los colores cálidos?", opts:["Son colores como el azul y el morado","Incluyen amarillo, naranja y rojo; evocan la luz de una vela","Son los colores del cielo nublado","Solo se usan en temporada de verano"], ans:1, exp:"Los colores cálidos (amarillo, naranja, rojo) evocan la luz que emite una vela." },
+  { tema:"Círculo Cromático", q:"¿Cuál subtono de piel favorece los colores dorados y terrosos?", opts:["Frío","Neutro","Cálido","Mixto"], ans:2, exp:"El subtono cálido (amarillo, dorado, durazno) se favorece con tonos dorados, tierra, coral, naranjas y marrones cálidos." },
+  { tema:"Círculo Cromático", q:"¿Cómo se identifica un subtono frío de piel?", opts:["Sus venas se ven de color verde","Se broncea fácilmente","Sus venas se ven azuladas y tiende a enrojecerse con el sol","Tiene piel muy oscura"], ans:2, exp:"El subtono frío se caracteriza por venas azuladas y tendencia a enrojecerse o quemarse con el sol." },
+  { tema:"Círculo Cromático", q:"¿En qué zona del rostro se prueba el tono de base correcto?", opts:["En el dorso de la mano","En la frente","En la mandíbula o parte baja de la mejilla, difuminando hacia el cuello","En la nariz"], ans:2, exp:"Debe aplicarse en la mandíbula o parte baja de la mejilla y difuminar hacia el cuello. El tono correcto desaparece al difuminarse." },
+  { tema:"Círculo Cromático", q:"¿Qué indica '120 Warm Beige' en una base de maquillaje?", opts:["Que la base tiene un acabado brillante","Que la base tiene un subtono cálido","Que la base es para pieles oscuras","Que la base contiene bronzer"], ans:1, exp:"Las marcas clasifican los tonos con nombres como 'Warm Beige' para indicar el subtono cálido del producto." },
+  { tema:"Preparación de Piel", q:"¿Cuáles son los tipos de piel del rostro?", opts:["Opaca, brillante, mixta y seca","Normal, seca, mixta, grasa y sensible","Clara, oscura, normal y grasa","Joven, madura, seca y grasa"], ans:1, exp:"Los tipos de piel del rostro son: normal, seca, mixta, grasa y sensible." },
+  { tema:"Preparación de Piel", q:"¿Cuántas capas principales tiene la piel del rostro?", opts:["Solo una: la epidermis","Dos: epidermis y dermis","Tres: epidermis, dermis e hipodermis","Cuatro capas iguales"], ans:2, exp:"La piel tiene tres capas principales: epidermis, dermis e hipodermis." },
+  { tema:"Preparación de Piel", q:"¿Cuál es la capa más superficial de la piel?", opts:["Hipodermis","Dermis","Epidermis","Subcutánea"], ans:2, exp:"La epidermis es la capa más superficial de la piel y la que está directamente expuesta al exterior." },
+  { tema:"Preparación de Piel", q:"¿Qué FPS mínimo se recomienda para uso diario?", opts:["FPS 10","FPS 15","FPS 20","FPS 30"], ans:3, exp:"Se recomienda nunca usar menos de FPS 30, aunque no salgas mucho. FPS 50 o más es ideal para exposición prolongada al sol." },
+  { tema:"Preparación de Piel", q:"¿Qué significa que un protector solar sea de 'amplio espectro'?", opts:["Que protege solo de quemaduras","Que protege tanto de rayos UVA como UVB","Que tiene mayor cantidad de crema","Que es resistente al agua"], ans:1, exp:"Broad Spectrum o Amplio Espectro garantiza protección contra UVB (quemaduras) y UVA (envejecimiento y manchas)." },
+  { tema:"Preparación de Piel", q:"¿Qué textura de protector solar se recomienda para piel grasa o mixta?", opts:["Crema hidratante densa","Loción muy espesa","Gel, fluido o toque seco matificante","Aceite solar ligero"], ans:2, exp:"Para piel grasa o mixta se recomiendan texturas en gel, fluido o toque seco matificante para evitar brillos." },
+  { tema:"Preparación de Piel", q:"¿Con qué frecuencia se debe reaplicar el protector solar?", opts:["Una sola vez al día","Cada 6 horas","Cada 2-3 horas, especialmente si sudas o te mojas","Solo cuando haya sol directo"], ans:2, exp:"Se debe reaplicar el protector solar cada 2-3 horas, especialmente si se suda o se tiene contacto con agua." },
+  { tema:"Preparación de Piel", q:"¿Qué tipo de filtros solares se recomiendan para piel sensible?", opts:["Filtros químicos intensivos","Filtros de óxido de zinc o dióxido de titanio (minerales)","Filtros con perfume","Filtros con alcohol"], ans:1, exp:"Para piel sensible se recomiendan fórmulas con filtros minerales como óxido de zinc o dióxido de titanio." },
+  { tema:"Preparación de Piel", q:"¿Qué característica debe tener el protector solar para piel con tendencia al acné?", opts:["Con fragancia y aceites nutritivos","Con color y cobertura alta","No comedogénico y oil-free","Con FPS bajo para no obstruir poros"], ans:2, exp:"Para piel con tendencia al acné se recomienda que el protector sea 'no comedogénico' y 'oil-free' para no obstruir los poros." },
+  { tema:"Preparación de Piel", q:"¿Cuáles son los pasos para preparar la piel correctamente?", opts:["Hidratar, limpiar, sellar hidratación, protección y desmaquillar","Desmaquillar, limpiar, hidratar, sellar hidratación y protección","Limpiar, protección, hidratar, desmaquillar y sellar hidratación","Protección, desmaquillar, limpiar, hidratar y sellar hidratación"], ans:1, exp:"El orden correcto para preparar la piel es: desmaquillar, limpieza, hidratar, sellar la hidratación y protección solar." },
+];
+
+let current = 0, answered = [], score = 0, studentName = '';
+
+function startQuiz() {
+  const inp = document.getElementById('student-name').value.trim();
+  if (!inp) { document.getElementById('name-error').style.display = 'block'; return; }
+  studentName = inp;
+  document.getElementById('name-area').style.display = 'none';
+  document.getElementById('quiz-area').style.display = 'block';
+  document.getElementById('quiz-name-badge').textContent = '👤 ' + studentName;
+  render();
+}
+document.getElementById('student-name').addEventListener('keydown', e => { if (e.key === 'Enter') startQuiz(); });
+
+function sectionLabel(i) {
+  return questions[i].tema === 'Círculo Cromático'
+    ? '<span class="section-label lbl-cromatico">🎨 Círculo Cromático</span>'
+    : '<span class="section-label lbl-piel">🧴 Preparación de Piel</span>';
+}
+
+function render() {
+  const total = questions.length;
+  document.getElementById('progress-fill').style.width = Math.round((current / total) * 100) + '%';
+  document.getElementById('progress-text').textContent = 'Pregunta ' + (current + 1) + ' de ' + total;
+  document.getElementById('score-text').textContent = 'Puntaje: ' + score + '/' + total;
+  if (current >= total) { showResults(); return; }
+  const q = questions[current];
+  const isAnswered = answered[current] !== undefined;
+  const fbClass = isAnswered ? (answered[current] === q.ans ? 'fb-correct' : 'fb-wrong') : '';
+  const fbText  = isAnswered ? (answered[current] === q.ans ? '✓ Correcto. ' : '✗ Incorrecto. ') + q.exp : '';
+  document.getElementById('question-area').innerHTML = `
+    ${sectionLabel(current)}
+    <div class="card">
+      <div class="question-num">Pregunta ${current + 1} de ${total}</div>
+      <div class="question-text">${q.q}</div>
+      <div class="options">
+        ${q.opts.map((o, i) => {
+          let cls = 'opt-btn';
+          if (isAnswered) { if (i === q.ans) cls += ' correct'; else if (i === answered[current] && answered[current] !== q.ans) cls += ' wrong'; }
+          return `<button class="${cls}" onclick="select(${i})" ${isAnswered ? 'disabled' : ''}>${o}</button>`;
+        }).join('')}
+      </div>
+      <div class="feedback ${isAnswered ? 'show ' + fbClass : ''}">${fbText}</div>
+    </div>
+    <div class="nav-row">
+      <button class="nav-btn" onclick="go(-1)" ${current === 0 ? 'disabled' : ''}>← Anterior</button>
+      <span class="score-pill">${score} / ${total} correctas</span>
+      <button class="nav-btn" onclick="go(1)" ${!isAnswered ? 'disabled' : ''}>${current === total - 1 ? 'Ver resultados →' : 'Siguiente →'}</button>
+    </div>`;
+}
+
+function select(i) {
+  if (answered[current] !== undefined) return;
+  answered[current] = i;
+  if (i === questions[current].ans) score++;
+  render();
+}
+
+function go(dir) {
+  if (dir === 1 && current === questions.length - 1) current = questions.length;
+  else current = Math.max(0, Math.min(questions.length - 1, current + dir));
+  render();
+}
+
+function showResults() {
+  document.getElementById('quiz-area').style.display = 'none';
+  const total = questions.length;
+  const pct   = Math.round((score / total) * 100);
+  const ahora = new Date();
+  const fecha = ahora.toLocaleDateString('es-MX', { day:'2-digit', month:'2-digit', year:'numeric' });
+  const hora  = ahora.toLocaleTimeString('es-MX', { hour:'2-digit', minute:'2-digit' });
+  const emoji = pct >= 80 ? '🎉' : pct >= 60 ? '💪' : '📖';
+  const msg   = pct >= 80 ? '¡Excelente trabajo!' : pct >= 60 ? 'Buen esfuerzo, sigue repasando.' : 'Te recomendamos repasar las presentaciones.';
+  const resultado = pct >= 80 ? 'Excelente' : pct >= 60 ? 'Suficiente' : 'Reprobado';
+  const sC = questions.slice(0,10).reduce((a,_,i) => a + (answered[i]    === questions[i].ans    ? 1 : 0), 0);
+  const sP = questions.slice(10).reduce( (a,_,i) => a + (answered[i+10] === questions[i+10].ans ? 1 : 0), 0);
+  const respuestas = questions.map((q,i) => answered[i] === q.ans ? 'Correcta' : 'Incorrecta');
+
+  const review = ['Círculo Cromático','Preparación de Piel'].map(tema => {
+    const icon  = tema === 'Círculo Cromático' ? '🎨' : '🧴';
+    const items = questions.map((q,i) => ({...q,idx:i})).filter(q => q.tema === tema).map(q => {
+      const ua = answered[q.idx], ok = ua === q.ans;
+      return `<div class="review-item">
+        <div class="review-q">${q.idx+1}. ${q.q}</div>
+        <div class="review-a">Tu respuesta: <span class="${ok?'ok':'err'}">${q.opts[ua]}</span>${!ok ? ` &mdash; Correcta: <span class="ok">${q.opts[q.ans]}</span>` : ''}</div>
+      </div>`;
+    }).join('');
+    return `<div class="section-divider">${icon} ${tema}</div>${items}`;
+  }).join('');
+
+  document.getElementById('results-area').innerHTML = `
+    <div class="results-card">
+      <div class="result-name">${studentName}</div>
+      <div class="score-big">${score}/${total}</div>
+      <div class="score-pct">${pct}%</div>
+      <div class="score-msg">${emoji} ${msg}</div>
+      <div class="score-breakdown">
+        <div class="score-box"><strong>${sC}/10</strong>🎨 Círculo Cromático</div>
+        <div class="score-box"><strong>${sP}/10</strong>🧴 Preparación de Piel</div>
+      </div>
+      <div class="result-date">${fecha} · ${hora}</div>
+      <div class="status-msg sending" id="msg-sending">📤 Enviando resultados...</div>
+      <div class="status-msg sent-ok" id="msg-ok">✅ Resultados enviados a la maestra</div>
+      <div class="status-msg sent-err" id="msg-err">⚠️ No se pudieron enviar los resultados. Avisa a tu maestra.</div>
+      <br/>
+      <button class="btn-retry" onclick="restart()">Volver a intentar</button>
+    </div>
+    <div>${review}</div>`;
+  document.getElementById('results-area').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  // ── Construir detalle de respuestas para el correo ──
+  const detalleTexto = questions.map((q,i) =>
+    (i+1) + '. [' + (respuestas[i]) + '] ' + q.q
+  ).join('\n');
+
+  // ── Enviar a Google Sheets (no-cors) ──
+  fetch(SHEET_URL, {
+    method:  'POST',
+    mode:    'no-cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      nombre: studentName, fecha, hora,
+      puntajeTotal: score + ' / ' + total,
+      porcentaje: pct, resultado,
+      scoreCromatico: sC + ' / 10',
+      scorePiel: sP + ' / 10',
+      respuestas
+    })
+  }).catch(() => {});
+
+  // ── Enviar a Formspree (correo a la maestra) ──
+  fetch(FORMSPREE_URL, {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body: JSON.stringify({
+      alumna:           studentName,
+      fecha:            fecha + ' ' + hora,
+      puntaje_total:    score + ' / ' + total + ' (' + pct + '%)',
+      resultado:        resultado,
+      circulo_cromatico: sC + ' / 10',
+      preparacion_piel:  sP + ' / 10',
+      detalle_respuestas: detalleTexto
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    document.getElementById('msg-sending').style.display = 'none';
+    if (data.ok) {
+      document.getElementById('msg-ok').style.display = 'block';
+    } else {
+      document.getElementById('msg-err').style.display = 'block';
+    }
+  })
+  .catch(() => {
+    document.getElementById('msg-sending').style.display = 'none';
+    document.getElementById('msg-err').style.display = 'block';
+  });
+}
+
+function restart() {
+  current = 0; answered = []; score = 0; studentName = '';
+  document.getElementById('results-area').style.display = 'none';
+  document.getElementById('results-area').innerHTML = '';
+  document.getElementById('student-name').value = '';
+  document.getElementById('name-error').style.display = 'none';
+  document.getElementById('name-area').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
